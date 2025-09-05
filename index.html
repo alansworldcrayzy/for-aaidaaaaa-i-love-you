@@ -1,24 +1,4 @@
-// src/main/java/com/example/love/LoveApp.java
-package com.example.love;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@SpringBootApplication
-public class LoveApp {
-    public static void main(String[] args) {
-        SpringApplication.run(LoveApp.class, args);
-    }
-}
-
-@RestController
-class LoveController {
-
-    @GetMapping("/")
-    public String index() {
-        return """
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -166,7 +146,4 @@ class LoveController {
           </script>
         </body>
         </html>
-        """;
-    }
-}
-
+        
