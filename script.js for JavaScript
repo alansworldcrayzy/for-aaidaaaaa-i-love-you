@@ -1,0 +1,65 @@
+import static spark.Spark.*;
+import java.util.*;
+
+public class FunQuizWebsite {
+    public static void main(String[] args) {
+        port(8080); // Website will run on http://localhost:8080
+
+        // Step 1: Store questions and answers
+        List<Question> questions = new ArrayList<>();
+        questions.add(new Question("What is the capital of France?", 
+                                   new String[]{"Paris", "Rome", "London", "Berlin"}, 0));
+        questions.add(new Question("Which planet is known as the Red Planet?", 
+                                   new String[]{"Earth", "Mars", "Jupiter", "Venus"}, 1));
+        questions.add(new Question("Who invented Java?", 
+                                   new String[]{"Elon Musk", "James Gosling", "Bill Gates", "Linus Torvalds"}, 1));
+        questions.add(new Question("What does HTML stand for?", 
+                                   new String[]{"Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language", "Hyper Transfer Makeup Language"}, 0));
+
+        Random rand = new Random();
+
+        // Step 2: Route for showing a random question
+        get("/", (req, res) -> {
+            Question q = questions.get(rand.nextInt(questions.size()));
+            StringBuilder html = new StringBuilder();
+            html.append("<html><body style='font-family:sans-serif;text-align:center;background:#f7f7f7;padding-top:50px;'>");
+            html.append("<h1>🧠 Quick Quiz!</h1>");
+            html.append("<form action='/answer' method='get'>");
+            html.append("<input type='hidden' name='q' value='" + q.text + "'>");
+            html.append("<input type='hidden' name='correct' value='" + q.correct + "'>");
+            html.append("<p><strong>" + q.text + "</strong></p>");
+            for (int i = 0; i < q.options.length; i++) {
+                html.append("<input type='radio' name='a' value='" + i + "' required> " + q.options[i] + "<br>");
+            }
+            html.append("<br><button type='submit'>Submit Answer ✅</button>");
+            html.append("</form></body></html>");
+            return html.toString();
+        });
+
+        // Step 3: Route for checking the answer
+        get("/answer", (req, res) -> {
+            String question = req.queryParams("q");
+            int correct = Integer.parseInt(req.queryParams("correct"));
+            int userAnswer = Integer.parseInt(req.queryParams("a"));
+
+            String message = (userAnswer == correct) ? "🎉 Correct!" : "❌ Wrong! Try again.";
+            String html = "<html><body style='font-family:sans-serif;text-align:center;background:#fff;padding-top:50px;'>"
+                        + "<h2>" + message + "</h2>"
+                        + "<p><a href='/'>Play Again 🔁</a></p>"
+                        + "</body></html>";
+            return html;
+        });
+    }
+
+    // Step 4: Helper class for questions
+    static class Question {
+        String text;
+        String[] options;
+        int correct;
+        Question(String text, String[] options, int correct) {
+            this.text = text;
+            this.options = options;
+            this.correct = correct;
+        }
+    }
+}
